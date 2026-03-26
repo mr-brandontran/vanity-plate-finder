@@ -1,26 +1,25 @@
 import sqlite3
-from datetime import datetime
 
-# This creates a local file to act as our database
 DB_FILE = "plates_cache.db"
 
-def setup_database():
-    """Creates the table if it doesn't exist yet."""
+def init_db():
+    """Creates the database and table if they don't exist yet."""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS plates (
             plate_str TEXT PRIMARY KEY,
             status TEXT,
-            last_checked TIMESTAMP
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     conn.commit()
     conn.close()
-    print("Database ready.")
+
+# Run this instantly whenever the app starts
+init_db()
 
 def get_cached_status(plate_str):
-    """Checks if we already know the status of this plate."""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute("SELECT status FROM plates WHERE plate_str = ?", (plate_str,))
@@ -28,24 +27,15 @@ def get_cached_status(plate_str):
     conn.close()
     
     if result:
-        return result[0] # Returns 'AVAILABLE' or 'TAKEN'
+        return result[0]
     return None
 
 def save_plate_status(plate_str, status):
-    """Saves or updates the plate's status in the database."""
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # REPLACE INTO acts like an UPSERT. It inserts, or updates if it already exists.
     cursor.execute('''
-        REPLACE INTO plates (plate_str, status, last_checked)
-        VALUES (?, ?, ?)
-    ''', (plate_str, status, now))
-    
+        INSERT OR REPLACE INTO plates (plate_str, status) 
+        VALUES (?, ?)
+    ''', (plate_str, status))
     conn.commit()
     conn.close()
-
-# Run this once to create the file when the script is tested
-if __name__ == "__main__":
-    setup_database()
