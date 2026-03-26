@@ -120,7 +120,7 @@ def check_plates_bulk(plates_to_check):
     if plates_to_scrape:
         print("\n--- SCRAPING DMV FOR UNKNOWN PLATES ---")
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
             context = browser.new_context()
             page = context.new_page()
 
