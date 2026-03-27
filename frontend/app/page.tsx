@@ -21,7 +21,7 @@ export default function Home() {
 
     try {
       // NEW: We inject the toggle states directly into the URL!
-      const url = `https://YOUR-NGROK-ID.ngrok-free.app/api/check?word=${word}&clean_only=${cleanOnly}&max_length=${maxLength}&max_variants=${maxVariants}`;
+      const url = `https://unconserving-juridically-roselle.ngrok-free.dev/api/check?word=${word}...`;
 
 // 2. Add the 'ngrok-skip-browser-warning' header to the fetch options
 const response = await fetch(url, {
