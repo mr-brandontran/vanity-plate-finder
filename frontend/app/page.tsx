@@ -16,8 +16,11 @@ export default function Home() {
   const [vault, setVault] = useState<string[]>([]);
   const [showVault, setShowVault] = useState(false);
   const [vaultLoading, setVaultLoading] = useState(false);
+  
+  // Copy State for visual feedback
+  const [copiedPlate, setCopiedPlate] = useState<string | null>(null);
 
-  const baseUrl = "https://unconserving-juridically-roselle.ngrok-free.dev"; // Your static ngrok URL
+  const baseUrl = "https://unconserving-juridically-roselle.ngrok-free.dev"; 
 
   const checkPlates = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +59,6 @@ export default function Home() {
       }
 
       setResults(data);
-      // Auto-refresh the vault if it's open so new finds appear instantly!
       if (showVault) loadVault(); 
     } catch (error: any) {
       if (error.name === 'AbortError') {
@@ -69,7 +71,6 @@ export default function Home() {
     }
   };
 
-  // NEW: Fetch the Vault Data
   const loadVault = async () => {
     if (showVault && vault.length > 0) {
       setShowVault(false);
@@ -93,6 +94,15 @@ export default function Home() {
     } finally {
       setVaultLoading(false);
     }
+  };
+
+  // NEW: Handle copying to clipboard with a 2-second checkmark reset
+  const handleCopy = (plate: string) => {
+    navigator.clipboard.writeText(plate);
+    setCopiedPlate(plate);
+    setTimeout(() => {
+      setCopiedPlate(null);
+    }, 2000);
   };
 
   return (
@@ -166,7 +176,17 @@ export default function Home() {
                 results.available_plates.map((plate: string) => (
                   <div key={plate} className="flex items-center justify-between p-5 hover:bg-neutral-800/50 transition-colors">
                     <span className="text-2xl font-medium tracking-widest text-white">{plate}</span>
-                    <span className="text-sm font-medium text-[#34C759]">Available</span>
+                    <button
+                      onClick={() => handleCopy(plate)}
+                      className="p-2 text-neutral-500 hover:text-white transition-colors"
+                      title="Copy to clipboard"
+                    >
+                      {copiedPlate === plate ? (
+                        <svg className="w-6 h-6 text-[#34C759]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      ) : (
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                      )}
+                    </button>
                   </div>
                 ))
               ) : (
@@ -197,9 +217,21 @@ export default function Home() {
               <div className="bg-[#1C1C1E] border border-neutral-800 rounded-2xl overflow-hidden divide-y divide-neutral-800 max-h-[400px] overflow-y-auto">
                 {vault.length > 0 ? (
                   vault.map((plate: string) => (
-                    <div key={plate} className="flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors">
+                    <div key={plate} className="flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors group">
                       <span className="text-xl font-medium tracking-widest text-white">{plate}</span>
-                      <span className="text-xs font-medium text-neutral-500 px-2 py-1 bg-neutral-800 rounded-md">Saved</span>
+                      
+                      {/* Copy Button */}
+                      <button
+                        onClick={() => handleCopy(plate)}
+                        className="p-2 text-neutral-500 hover:text-white bg-neutral-800/30 hover:bg-neutral-700 rounded-lg transition-all active:scale-90"
+                        title="Copy to clipboard"
+                      >
+                        {copiedPlate === plate ? (
+                          <svg className="w-5 h-5 text-[#34C759]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                        )}
+                      </button>
                     </div>
                   ))
                 ) : (

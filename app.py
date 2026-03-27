@@ -147,3 +147,28 @@ async def check_vanity_plate(word: str, clean_only: str = "false", max_length: i
     
     found = await check_plates_bulk(test_batch)
     return {"seed_word": word, "available_plates": found}
+
+    # Add this to the bottom of app.py
+import sqlite3
+
+@app.get("/api/vault")
+def get_available_vault():
+    try:
+        conn = sqlite3.connect('plates_cache.db') 
+        c = conn.cursor()
+        
+        # Grab everything where status is AVAILABLE
+        c.execute("SELECT * FROM plates WHERE status = 'AVAILABLE'")
+        
+        # Extract the very first column (the plate text) from every row
+        plates = [row[0] for row in c.fetchall()]
+        
+        # Sort them alphabetically in Python so it looks clean on the UI
+        plates.sort()
+        
+        conn.close()
+        return {"vault": plates}
+    except Exception as e:
+        # This will now print the exact error in your terminal if it fails!
+        print(f"CRITICAL VAULT ERROR: {e}")
+        return {"vault": []}

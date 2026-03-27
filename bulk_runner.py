@@ -16,7 +16,7 @@ async def run_mass_check():
     print(f"🎯 Target Acquired: 1000 clean words selected.")
 
     # 4. Chunk them into batches of 50 to avoid crashing the browser or getting IP banned
-    batch_size = 50
+    batch_size = 10
     for i in range(0, len(target_words), batch_size):
         batch = target_words[i:i+batch_size]
         print(f"\n🚀 --- STARTING BATCH {i//batch_size + 1} OF {1000//batch_size} ---")
@@ -24,8 +24,8 @@ async def run_mass_check():
         # Call your existing scraping function
         await check_plates_bulk(batch)
         
-        print("🛑 Batch complete. Sleeping for 15 seconds to let the DMV cool down...")
-        time.sleep(15)
+        print("🛑 Batch complete. Sleeping for 45 seconds to let the DMV cool down...")
+        time.sleep(45)
 
 if __name__ == "__main__":
     print("Starting Vanity Plate Bulk Runner...")
