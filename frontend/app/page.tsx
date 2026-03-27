@@ -21,9 +21,16 @@ export default function Home() {
 
     try {
       // NEW: We inject the toggle states directly into the URL!
-      const url = `https://vanity-plate-finder.onrender.com/api/check?word=${word}&clean_only=${cleanOnly}&max_length=${maxLength}&max_variants=${maxVariants}`;
-      
-      const response = await fetch(url);
+      const url = `https://YOUR-NGROK-ID.ngrok-free.app/api/check?word=${word}&clean_only=${cleanOnly}&max_length=${maxLength}&max_variants=${maxVariants}`;
+
+// 2. Add the 'ngrok-skip-browser-warning' header to the fetch options
+const response = await fetch(url, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true" // This bypasses the ngrok splash screen
+  }
+});
       const data = await response.json();
 
       if (!response.ok || !data.variations_tested) {
